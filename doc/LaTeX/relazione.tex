@@ -1,0 +1,230 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc} 
+\usepackage[italian]{babel}
+\usepackage{latexsym}
+\usepackage{url}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{multirow}
+\title{Secure Crypto\\
+Protocollo di sicurezza basato su Chiave Pubblica e segreto condiviso tra Client e Server}
+\author{Carmine Benedetto}
+\date{25 Gennaio 2012}
+%INIZIO INTESTAZIONE
+\frenchspacing
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\bfseries\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection.\ #1}{}}
+%FINE INTESTAZIONE
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage 
+\section{Specifiche Formali}
+\subsection{Indicazioni generali}
+Si consideri un'applicazione distribuita di tipo cliente-servitore in cui il server ha una coppia di chiavi pubblica e privata e la chiave pubblica è nota ai clienti.\\
+Ciascun cliente condivide una password segreta con il server.
+\subsection{Requisiti}
+Si specifichi, si analizzi, si progetti ed, infine, si implementi un protocollo crittografico che soddisfi i seguenti requisiti:
+\begin{itemize}
+\item 
+al termine dell'esecuzione del protocollo, viene stabilita una chiave di sessione tra cliente e servitore;
+\item
+al termine dell'esecuzione del protocollo, il cliente ritiene che il servitore dispone della chiave di sessione e viceversa. 
+\end{itemize}
+\subsection{Richieste avanzate}
+La specifica del protocollo deve mettere chiaramente in evidenza le ipotesi sotto le quali il protocollo funziona correttamente.\\
+La specifica del protocollo deve comprendere la realizzazione di un prototipo in cui il server ed il cliente si scambiano del materiale (testo o binario) cifrato con la chiave di sessione.
+\newpage
+\section{Analisi del protocollo}
+\subsection{Descrizione}
+Il protocollo complessivamente consta di quattro messaggi.
+\begin{enumerate}
+\item 
+Il messaggio M1 viene inviato in chiaro dal Client al Server e trasporta gli identificativi del Client e del Server. Tramite il suddetto messaggio il Client comunica al Server l'intenzione di instaurare una connessione con lo scopo di stabilire una chiave di sessione.
+\item 
+Il Server risponde al Client con il messaggio in chiaro M2 che contiene gli identificativi di Server e Client accompagnati da un nonce.
+\item 
+Il Client invia al Server il messaggio M3, cifrato con la chiave pubblica del Server, contenente i soliti identificativi, il nonce precedentemente inviato dal Server, la password condivisa tra Client e Server e la chiave di sessione generata dal Client.
+\item 
+Il Server conclude il protocollo inviando al Client il messaggio M4, cifrato con la chiave di sessione, in cui inoltra i soliti identificativi e la password condivisa.
+\end{enumerate}
+\subsection{Visione formale}
+\textbf{M1:} C $\rightarrow$ S: C, S\\\\
+\textbf{M2:} S $\rightarrow$ C: S, C, N\\\\
+\textbf{M3:} C $\rightarrow$ S: $E_{Kpub}$(C, S, N, P, Kses)\\\\
+\textbf{M4:} S $\rightarrow$ C: $E_{Kses}$(S, C, P)
+\subsection{Visione idealizzata}
+I messaggi non cifrati, non avendo rilevanza ai fini dell'analisi, non verrano presi in considerazione.\\\\
+\textbf{M3:} C $\rightarrow$ S: \{$\langle$N, C $\Longleftrightarrow^{P}$ S, C $\longleftrightarrow^{Kses}$ S$\rangle_P$\}$_{Kpub}$\\\\
+\textbf{M4:} S $\rightarrow$ C: \{$\langle$S $\Longleftrightarrow^{P}$ C, C $\longleftrightarrow^{Kses}$ S$\rangle_P$\}$_{Kses}$
+\subsection{Note}
+La chiave di sessione viene generata dal Client in maniera random quindi ha una validità temporale limitata ed è considerabile "fresca".\\
+\textbf{Il Server ritiene che il Client sia un'entità affidabile per la generazione della chiave di sessione.}\\
+\textbf{Il Client ha a disposizione la chiave pubblica del Server che si suppone essere certificata da un apposito ente.}\\
+Il nonce viene generato dal Server in maniera random quindi ha una validità temporale limitata ed è considerabile come una quantità "fresca".\\
+Nel messaggio M4, la password condivisa viene inserita all'interno del messaggio per avere ulteriore conferma che gli estremi della comunicazione non siano cambiati e per incrementare il corpo del messaggio in modo da rendere più complicati attacchi di tipo esaustivo.
+\subsection{Ipotesi iniziali}
+Osservando il protocollo possiamo dedurre semplicemente delle ipotesi iniziali:\\\\
+S $\mid\equiv\sharp$(N)\\\\\
+S $\mid\equiv$ C $\Longleftrightarrow^{P}$ S\\\\
+C $\mid\equiv$ C $\Longleftrightarrow^{P}$ S\\\\ 
+C $\mid\equiv$ $\hookrightarrow^{Kpub}S$\\\\
+Dallo studio dei messaggi M3 ed M4 risulta ovvio che:\\\\
+S $\lhd$ \{N, C $\Longleftrightarrow^{P}$ S, C $\longleftrightarrow^{Kses}$ S\}$_{Kpub}$\\\\
+C $\lhd$ \{C $\Longleftrightarrow^{P}$ S, C $\longleftrightarrow^{Kses}$ S\}$_{Kses}$
+\subsection{Produzione delle asserzioni e aggiunta delle ipotesi}
+Nel messaggio M3 per la \textit{message meaning rule} otteniamo:\\\\
+S $\mid\equiv$ C $\mid\sim$ (N, P, C $\longleftrightarrow^{Kses}$ S)\\\\
+Per la \textit{nonce verification rule} otteniamo:\\\\
+S $\mid\equiv$ C $\mid\equiv$ (N, P, C $\longleftrightarrow^{Kses}$ S)\\\\
+Aggiungendo le ipotesi:\\\\
+S $\mid\equiv$ C $\Rightarrow$ C $\longleftrightarrow^{Kses}$ S\\\\
+S $\mid\equiv$ C $\Rightarrow$ $\sharp$(C $\longleftrightarrow^{Kses}$ S)\\\\
+otteniamo tramite la \textit{jurisdition rule}:\\\\
+S $\mid\equiv$ C $\longleftrightarrow^{Kses}$ S\\\\
+S $\mid\equiv$ $\sharp$ (C $\longleftrightarrow^{Kses}$ S)\\\\
+Risulta facilmente deducibile che valgono anche:\\\\
+C $\mid\equiv$ C $\longleftrightarrow^{Kses}$ S\\\\
+C $\mid\equiv$ $\sharp$ (C $\longleftrightarrow^{Kses}$ S)\\\\
+Nel messaggio M4, utilizzando la \textit{message meaning rule} otteniamo:\\\\
+C $\mid\equiv$ S $\mid\sim$ (C $\Longleftrightarrow^{P}$ S, C $\longleftrightarrow^{Kses}$ S)\\\\
+Utilizzando l'asserzione sulla freschezza della chiave prodotta precedentemente otteniamo:\\\\
+C $\mid\equiv$ S $\mid\equiv$ (C $\Longleftrightarrow^{P}$ S, C $\longleftrightarrow^{Kses}$ S)
+\subsection{Verifica per deduzione logica}
+Il Client, avendo ricevuto da un ente di certificazione la chiave pubblica del Server, la utilizza per cifrare il messaggio contenente la chiave di sessione da esso generata. In questo modo è sicuro che solo il Server, attraverso la chiave privata, sarà in grado di decifrare il messaggio e quindi di venire in possesso della chiave di sessione. Permane il fatto che il Server pone fiducia nella capacità del Client di generare in maniera adeguata e affidabile la chiave di sessione.\\
+Il Server, al fine di confermare al Client di aver ricevuto in maniera corretta la chiave di sessione, invia un messaggio cifrato con la stessa, contenente parte del messaggo precedentemente ricevuto. La presenza nel messaggio del segreto condiviso tra Client e Server, da conferma che il messaggio proviene dal Server.
+\subsection{Verifica degli obiettivi}
+Raccogliendo le asserzioni prodotte e facendo delle semplici deduzioni basate sull'osservazione del protocollo notiamo che risultano rispettati gli obiettivi di:
+\begin{itemize}
+\item 
+\textbf{key authentication}: C $\mid\equiv$ C $\longleftrightarrow^{Kses}$ S, S $\mid\equiv$ C $\longleftrightarrow^{Kses}$ S
+\item 
+\textbf{key confirmation}: C $\mid\equiv$ S $\mid\equiv$ C $\longleftrightarrow^{Kses}$ S, S $\mid\equiv$ C $\mid\equiv$ C $\longleftrightarrow^{Kses}$ S
+\item 
+\textbf{key freshness}: C $\mid\equiv$ $\sharp$ (C $\longleftrightarrow^{Kses}$ S), S $\mid\equiv$ $\sharp$ (C $\longleftrightarrow^{Kses}$ S)
+\end{itemize}
+\newpage
+\section{Implementazione del protocollo}
+\subsection{Ambiente di sviluppo e linguaggio di programmazione}
+Il progetto è stato realizzato in ambiente GNU/Linux utilizzando il linguaggio di programmazione C++.\\
+Per la parte implementativa strettamente legata alle funzioni di cifratura è stato utilizzato il tool OpenSSL e le relative librerie di estensione per il C++.
+\subsection{Chiave pubblica e privata}
+La generazione della chiave pubblica, e della chiave privata ad essa connessa, è stata effettuata utilizzando le utility offerte da OpenSSL.\\
+Nello specifico è stata generata una chiave RSA codificata con DES lunga 1024 bit. La chiave così generata è stata opportunamente manipolata in modo da produrre due ulteriori chiavi: chiave pubblica e chiave privata.\\
+Le chiavi risiedono nella directory \textit{/certification} in cui in particolare troviamo:
+\begin{itemize}
+\item 
+\textit{pub\_key.pem} - chiave pubblica del Server;
+\item
+\textit{pri\_key.pem} - chiave privata associata alla chiave pubblica del Server.
+\end{itemize}
+La creazione delle chiavi è modificabile a tempo di compilazione.\\
+\textbf{Anche se non è stata implementata nessuna sezione di codice in questo senso, si suppone, come già spiegato in precedenza, che la chiave pubblica sia garantita da un ente di certificazione e che la chiave privata ad essa associata sia conosciuta in maniera esclusiva dal Server.}
+\subsection{Precisazioni introduttive}
+La connessione Client-Server è effettuata utilizzando le classiche funzioni per la creazione e l'utilzzo di socket. Il Server, per semplicità di gestione, non è di tipo multi-thread, ma una realizzazione in questo senso è facilmente ricavabile con piccole modifiche al codice in oggetto.\\
+Il Server tiene memoria dei Client con cui condivide segreti ed in particolare conosce gli id dei suddetti Client e le password associate. Nel caso specifico sono state memorizzate le informazioni relative ad un solo Client, ma un'estensione di tale implementazione considerando più di un Client è facilmente realizzabile.
+\subsection{Connessione e scambio messaggi}
+Per effettuare la connessione è necessario assegnare un indirizzo IP al server e una porta associata alla connessione in apertura, e specificare la password (di almeno 8 elementi tra caratteri alfanumerici e caratteri speciali) condivisa con il Client. Il Server dopo aver settato le opportune variabili di connessione, entra in un ciclo infinito in cui risulta in attesa continua di richieste da parte del Client. Il Client per poter effettuare la connessione al Server di riferimento deve utilizzare lo stesso indirizzo IP e la stessa porta assegnate in precedenza al Server, in aggiunta alla password condivisa. Naturalmente per eseguire l'applicazione in locale è indispensabile assegnare come indirizzo IP l'indirizzo di \textit{localhost} 127.0.0.1.\\
+La fase immediatamente successiva a quella della connessione è quella relativa allo scambio di messaggi che viene realizzata tramite l'utilizzo di primitive \textit{send/receive}. I primi due messaggi in chiaro sono implementati utilizzando due strutture dati opportunamente definite e allocate sia nel Client che nel Server. I restanti due messaggi, cifrati uno con la chiave pubblica e uno con la chiave di sessione, sono stringhe dinamiche create concatendando le varie componenti del messaggio discriminate da un separatore, nel caso specifico il carattere di spazio. Il separatore risulta fondamentale per poter effettuare l'analisi del messaggio da parte del ricevente dello stesso.
+\subsection{Controlli}
+Nella prima parte dell'applicazione, sia lato Server che lato Client, vengono effettuati due controlli precedenti la creazione dei socket: il primo sulla password inserita che deve essere composta da almeno 8 caratteri alfanumerici e/o caratteri speciali, il secondo sulla porta utilizzata per la linea di comunicazione che non deve appartenere al range [0, 1023] (Well Known Port) o deve essere utilizzata con molta attenzione nel caso appartenga al range [49152, 65535] (Dynamic and/or Private Port).\\
+Lato Server, alla ricezione del messaggio M1, viene effettuato un controllo per verificare che l'identificativo del Client che ha stimolato l'inizio del protocollo sia presente tra quelli noti al Server (Client con cui il Server condivide un segreto).\\
+Sempre lato Server, una volta ricevuto e decriptato il messaggio M3, viene effettuato un controllo per verificare che la password contenuta nel messaggio coincida con quella attesa e che il nonce contenuto nel messaggio coincida con quello atteso.\\
+Un controllo analogo sulla password viene affettuato lato Client una volta ricevuto e decriptato il messaggio M4.
+\subsection{Note sul nounce}
+Il nonce viene creato come un intero random convertito in stringa quando necessario.
+\subsection{Note sulla chiave di sessione}
+La chiave di sessione è composta generando tre interi random che, dopo essere stati convertiti in stringhe, vengono  concatenati tra loro.\\
+La chiave viene utilizzata per effettuare cifratura a blocchi in modalità ECB. Il testo in chiaro viene gestito 64 bit per volta; ognuno dei blocchi di 64 bit viene cifrato con la stessa chiave. Per messaggi più lunghi di 64 bit, si procede suddividendo il messaggio in blocchi di 64 bit, settando a 0, se necessario, i restanti bit nell'ultimo blocco.\\
+Il testo in chiaro, quindi, viene suddiviso in blocchi di 8 byte e viene cifrato blocco per blocco. Naturalmente anche in fase di decodifica viene effettuata un'analisi blocco per blocco sul messaggio cifrato.
+\subsection{Funzioni di cifratura}
+\subsubsection{Cifratura con chiave pubblica e chiave privata}
+Per effettuare la cifratura dei messaggi tramite chiave pubblica e la decifratura tramite chiave privata sono state utilizzate le funzioni appartenenti alla librerie \textit{openssl/pem.h} e \textit{openssl/rsa.h}.\\\\
+\textbf{Sinossi delle funzioni utilizzate:}
+\begin{itemize}
+\item
+RSA *PEM\_read\_RSAPublicKey(BIO *bp, RSA **x, pem\_password\_cb *cb, void *u);
+\item
+RSA *PEM\_read\_RSAPrivateKey(FILE *fp, RSA **x, pem\_password\_cb *cb, void *u);
+\item 
+int RSA\_public\_encrypt(int flen, unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+\item
+int RSA\_private\_decrypt(int flen, unsigned char *from, unsigned char *to, RSA *rsa, int padding);
+\end{itemize}
+\subsubsection{Cifratura con chiave di sessione}
+Per effettuare la cifratura dei messaggi tramite chiave di sessione sono state utilizzate le funzioni appartenenti alla libreria \textit{openssl/blowfish.h}.\\\\
+\textbf{Sinossi delle funzioni utilizzate:}
+\begin{itemize}
+\item 
+void BF\_set\_key(BF\_KEY *key, int len, const unsigned char *data);
+\item
+void BF\_ecb\_encrypt(const unsigned char *in, unsigned char *out, BF\_KEY *key, int enc);
+\end{itemize}
+\newpage
+\section{Test}
+Per testare il corretto funzionamento del protocollo è stato effettuato un piccolo test consistente nell'invio, da parte del Client, di un file di testo cifrato con la chiave di sessione.\\
+Nello specifico il Client preleva dalla directory /test un file di testo, lo memorizza in una stringa e invia la stringa al Server dopo averla opportunamente cifrata con la chiave di sessione.\\
+Il Server riceve la stringa cifrata contenente il file di test, la decifra e stampa il contenuto della stessa su terminale.\\
+Confrontando il contenuto del file di testo e ciò che viene stampato sul Server è facile determinare se il file è stato correttamente cifrato dal Client e decifrato dal Server.
+\newpage
+\section{Compilazione ed esecuzione}
+Per compilare l'applicazione posizionarsi nella directory principale del programma e digitare da shell:
+\begin{itemize}
+\item 
+\textit{make server} - nel caso si voglia compilare la parte relativa al server;
+\item 
+\textit{make client} - nel caso si voglia compilare la parte relativa al Client;
+\item 
+\textit{make} - nel caso si voglia compilare il codice sorgente  per intero.
+\end{itemize}
+Per eseguire il Server posizionarsi nella directory \textit{/bin} e digitare da shell:\\
+\textit{./server indirizzo\_IP\_server porta password\_condivisa}\\\\
+\textit{Esempio:}\\
+\textit{./server 127.0.0.1 1234 ?123456789!}\\\\
+Per eseguire il Client posizionarsi nella directory \textit{/bin} e digitare da shell:\\
+\textit{./client indirizzo\_IP\_server porta password\_condivisa}\\\\
+\textit{Esempio:}\\
+\textit{./client 127.0.0.1 1234 ?123456789!}
+\newpage
+\section{Scripting}
+\subsection{Doppio Script}
+Per facilitare l'esecuzione dell'applicazione sono stati creati due script.\\
+Sarà, quindi, sufficiente eseguire in due terminali differenti lo script relativo al Server e lo script relativo al Client.\\
+I due script risiedono nella directory \textit{/script}.\\
+Gli script sono stati generati in maniera tale da poter facilmente modificare a tempo di esecuzione:
+\begin{itemize}
+\item
+indirizzo IP del Server;
+\item
+porta associata alla connessione;
+\item
+segreto condiviso tra Client e Server.
+\end{itemize}
+Per eseguire il Server posizionarsi nella directory \textit{/script} e digitare da shell:\\
+\textit{./s}\\\\
+Per eseguire il Client posizionarsi nella directory \textit{/script} e digitare da shell:\\
+\textit{./c}
+\subsection{Script Unico}
+Un'ulteriore ottimizzazione ai fini dell'esecuzione dell'applicazione è stata ottenuta generando uno script unico.\\
+Lo script IDE (I DO EVERITHING) si occupa di mandare in esecuzione il Server, attendere un tempo pari a due secondi e quindi mandare in esecuzione il Client. I due output verranno salvati in due logfile all'interno della directory \textit{/log} con il nome rispettivamente di \textit{log\_server} e \textit{log\_client}.\\
+In questa maniera si renderà necessario aprire una sola finestra di shell per mandare in esecuzione contemporaneamente Server e Client e sarà possibile controllare il corretto funzionamento del programma, fase di test compresa, andado a consultare il file \textit{log\_server} all'interno della directory \textit{/log}.\\
+Al termine della sua esecuzione lo script chiuderà automaticamente i processi Server e Client.\\
+Anche questo script è stato creato in maniera tale da poter facilmente modificare a tempo di esecuzione:
+\begin{itemize}
+\item
+indirizzo IP del Server;
+\item
+porta associata alla connessione;
+\item
+segreto condiviso tra Client e Server.
+\end{itemize}
+Per eseguire lo script posizionarsi nella directory \textit{/script} e digitare da shell:\\
+\textit{./ide}\\\\
+Per visualizzare i file di log posizionarsi della directory \textit{/log} e digitare da shell:\\
+\textit{cat  log\_server} - per visualizzare il log del Server\\
+\textit{cat log\_client} - per visualizzare il log del Client  
+\end{document}

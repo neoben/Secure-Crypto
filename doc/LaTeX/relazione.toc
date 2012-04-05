@@ -1,0 +1,30 @@
+\select@language {italian}
+\contentsline {section}{\numberline {1}Specifiche Formali}{3}
+\contentsline {subsection}{\numberline {1.1}Indicazioni generali}{3}
+\contentsline {subsection}{\numberline {1.2}Requisiti}{3}
+\contentsline {subsection}{\numberline {1.3}Richieste avanzate}{3}
+\contentsline {section}{\numberline {2}Analisi del protocollo}{4}
+\contentsline {subsection}{\numberline {2.1}Descrizione}{4}
+\contentsline {subsection}{\numberline {2.2}Visione formale}{4}
+\contentsline {subsection}{\numberline {2.3}Visione idealizzata}{4}
+\contentsline {subsection}{\numberline {2.4}Note}{5}
+\contentsline {subsection}{\numberline {2.5}Ipotesi iniziali}{5}
+\contentsline {subsection}{\numberline {2.6}Produzione delle asserzioni e aggiunta delle ipotesi}{5}
+\contentsline {subsection}{\numberline {2.7}Verifica per deduzione logica}{6}
+\contentsline {subsection}{\numberline {2.8}Verifica degli obiettivi}{7}
+\contentsline {section}{\numberline {3}Implementazione del protocollo}{8}
+\contentsline {subsection}{\numberline {3.1}Ambiente di sviluppo e linguaggio di programmazione}{8}
+\contentsline {subsection}{\numberline {3.2}Chiave pubblica e privata}{8}
+\contentsline {subsection}{\numberline {3.3}Precisazioni introduttive}{8}
+\contentsline {subsection}{\numberline {3.4}Connessione e scambio messaggi}{9}
+\contentsline {subsection}{\numberline {3.5}Controlli}{9}
+\contentsline {subsection}{\numberline {3.6}Note sul nounce}{10}
+\contentsline {subsection}{\numberline {3.7}Note sulla chiave di sessione}{10}
+\contentsline {subsection}{\numberline {3.8}Funzioni di cifratura}{10}
+\contentsline {subsubsection}{\numberline {3.8.1}Cifratura con chiave pubblica e chiave privata}{10}
+\contentsline {subsubsection}{\numberline {3.8.2}Cifratura con chiave di sessione}{10}
+\contentsline {section}{\numberline {4}Test}{12}
+\contentsline {section}{\numberline {5}Compilazione ed esecuzione}{13}
+\contentsline {section}{\numberline {6}Scripting}{14}
+\contentsline {subsection}{\numberline {6.1}Doppio Script}{14}
+\contentsline {subsection}{\numberline {6.2}Script Unico}{14}

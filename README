@@ -1,0 +1,34 @@
+PROTOCOLLO DI SICUREZZA BASATO SU CHIAVE PUBBLICA E SEGRETO CONDIVISO
+								
+SVILUPPATORE:	
+-   Carmine Benedetto (http://www.carminebenedetto.net)	 				
+
+ISTRUZIONI DI COMPILAZIONE:
+Per compilare l’applicazione posizionarsi nella directory principale del programma e digitare da shell:
+	make server - nel caso si voglia compilare la parte relativa al server;
+	make client - nel caso si voglia compilare la parte relativa al Client;
+	make - nel caso si voglia compilare il codice sorgente per intero.
+
+ISTRUZIONI DI ESECUZIONE TRAMITE SCRIPT IDE (I DO EVERITHING):
+Per esegure contemporaneamente il Server ed il Client posizionarsi nella directory /script e digitare da shell:
+./ide
+Lo script manderà in esecuzione il Server e successivamente il Client e memorizzerà l'output delle due applicazioni in due logfile all'interno della directory /log.
+Per visualizzare il log file relativo al server posizionarsi nella directory /log e digitare da shell:
+	cat log_server (o alternativamente cat log_server | more)
+Per visualizzare il log file relativo al client posizionarsi nella directory /log e digitare da shell:
+	cat | log_client (o alternativamente cat log_client | more)
+
+ISTRUZIONI DI ESECUZIONE TRAMITE SCRIPT:
+Per eseguire il Server posizionarsi nella directory /script e digitare da shell:
+	./s
+Per eseguire il Client posizionarsi nella directory /script e digitare da shell:
+	./c
+
+ISTRUZIONI DI ESECUZIONE TRAMITE RIGA DI COMANDO:
+Per eseguire il Server posizionarsi nella directory /bin e digitare da shell:
+	./server <indirizzo IP server> <porta> <password condivisa>
+Per eseguire il Client posizionarsi nella directory /bin e digitare da shell:
+	./client <indirizzo IP server> <porta> <password condivisa>
+
+ULTERIORI INFORMAZIONI:
+Per maggiori dettagli consultare la documentazione presente all'interno della directory /doc.

@@ -1,0 +1,11 @@
+COMANDI UTILIZZATI PER LA GENERAZIONE DELLE CHIAVI (Utility OpenSSL)
+
+Generazione della chiave pubblica e della chiave privata codificata con DES lunga 1024 bit:
+openssl genrsa -des -F4 -out key_pwd.pem 1024
+password inserita: sicurezza
+
+Generazione della chiave senza password (parte privata della chiave):
+openssl rsa -in key_pwd.pem -out pri_key.pem
+
+Estrazione della sola parte pubblica della chiave:
+openssl rsa -in key_pwd.pem -pubout -out pub_key.pem

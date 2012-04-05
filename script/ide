@@ -1,0 +1,29 @@
+#! /bin/sh
+
+#SCRIPT IDE - I DO EVERITHING
+
+COMANDO_S=server
+COMANDO_C=client
+INDIRIZZO=127.0.0.1
+PORTA=1234
+PASSWORD=?12345678?
+
+echo "" > ../log/log_server
+echo "" > ../log/log_client
+
+echo ""
+echo "****** INIZIO DELLO SCRIPT ******"
+
+echo ""
+echo "STEP 1 : SERVER IN ESECUZIONE"
+../bin/$COMANDO_S $INDIRIZZO $PORTA $PASSWORD >> ../log/log_server&
+sleep 2
+
+echo ""
+echo "STEP 2 : CLIENT IN ESECUZIONE"
+../bin/$COMANDO_C $INDIRIZZO $PORTA $PASSWORD >> ../log/log_client&
+
+echo ""
+echo "******** FINE DELLO SCRIPT ********"
+echo ""
+
